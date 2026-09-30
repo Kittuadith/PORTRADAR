@@ -12,10 +12,37 @@ external libraries.
 - Animated live radar view with a real-time progress bar
 - Export scan results as JSON
 
- Run
-python app.py
-Then open http://127.0.0.1:8000
-
  Disclaimer
 For educational use only. Scan only systems you own or have
 written permission to test.
+
+ Project Structure
+
+```
+PortRadar/
+├── app.py            # Complete project: backend server + web UI
+├── README.md         # Project documentation
+└── screenshot.png    # Screenshot of the radar interface (optional)
+```
+
+ Inside `app.py`
+
+```
+app.py
+├── Configuration      → host, port, scan limits, common ports list
+├── Service & Risk DB  → port-to-service names and risk notes
+├── check_port()       → TCP connect check (open / closed / filtered) + banner grab
+├── parse_ports()      → validates common / range / custom port input
+├── run_job()          → multithreaded scan running in the background
+├── Handler            → HTTP server with the /api/scan and /api/status endpoints
+└── PAGE               → HTML, CSS and JavaScript for the radar UI
+```
+
+ How it works
+
+```
+Browser (HTML/CSS/JS)  ──POST /api/scan──▶  Python server (http.server)
+        ▲                                          │
+        │                                   Thread pool (100 workers)
+        └──── GET /api/status (polling) ◀── socket TCP checks
+```
